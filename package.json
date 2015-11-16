@@ -15,7 +15,8 @@
     "serve-favicon": "~2.2.0",
 
     "nano":"2.0.6",
-    "fs":"*"
+    "fs":"*",
+    "formidable":"*"
 
   }
 }
