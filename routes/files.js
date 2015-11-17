@@ -3,6 +3,9 @@ var router = express.Router();
 
 var fs = require('fs');
 var formidable = require("formidable");
+var nano = require('nano')('http://localhost:5984');
+var db = require('nano')('http://localhost:5984/sotsu');
+var alice = nano.use('sotsu');
 
 //ルーティングで/filesに入ってきているのは前提
 //それ以降のurlを
@@ -29,6 +32,14 @@ router.post('/add', function(req,res, next){
     if(err) console.log('output err' + err);
     else console.log('done\n'+file);
   });
+
+  //CouchDB
+  db.insert({"foo":"baz"}, "ryujidoc", function(err, foo){
+	   if(!err)
+		   console.log("it worked");
+	  else
+		  console.log("sad panda");
+    });
   res.render('files', {title:'File_io add'});
 
 });

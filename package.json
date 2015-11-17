@@ -14,7 +14,7 @@
     "morgan": "~1.5.1",
     "serve-favicon": "~2.2.0",
 
-    "nano":"2.0.6",
+    "nano":"2.*",
     "fs":"*",
     "formidable":"*"
 
