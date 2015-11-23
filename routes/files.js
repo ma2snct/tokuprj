@@ -1,11 +1,25 @@
 var express = require('express');
 var router = express.Router();
 
-var fs = require('fs');
-var formidable = require("formidable");
+//var fs = require('fs');
+//var formidable = require("formidable");
 
-//ルーティングで/filesに入ってきているのは前提
-//それ以降のurlを
+var multer  = require('multer')
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        //cb(null, '/tmp/my-uploads')
+        cb(null, 'uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname + '-' + Date.now())
+  }
+})
+
+var upload = multer({ storage: storage })
+
+
+
 router.get('/', function(req, res, next) {
   /*
   fs.readFile('./public/static/sample.csv', 'utf-8', function(err, text){
@@ -15,26 +29,11 @@ router.get('/', function(req, res, next) {
   res.render('files', {title:'File_io'});
 });
 
-//Error: ENOENT, open でいかれ 11/16 can't find uploaded file.
-router.post('/add', function(req,res, next){
-  var form = new formidable.IncomingForm();
-  form.parse(req, function(err, fields, files){
-    fs.rename(files.upload.path, "/tmp/test.csv", function(err){
-      if(err){
-        console.log('input err' + err);
-      }else{
-        console.log('input :'+files.upload.path);
-      }
-    });
-  });
-
-  //file open
-  fs.readFile("/tmp/test.csv", 'utf-8', function(err, file) {
-    if(err) console.log('output err' + err);
-    else console.log('done\n'+file);
-  });
+//Error: ENOENT, open 11/16 can't find uploaded file.
+router.post('/add', upload.single('avatar'), function (req, res, next){
+  console.log(req.file)
   res.render('files', {title:'File_io add'});
-
+  res.status(204).end();
 });
 
 module.exports = router;
