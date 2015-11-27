@@ -17,6 +17,7 @@ var cipher = crypto.createCipher('aes192', passowrd); //algorithm, password
 var users = [
     { id: 1, username: 'bob', password: 'secret', email: 'bob@example.com', hash: 'a123bc45d678', status: 'offline' }
   , { id: 2, username: 'joe', password: 'birthday', email: 'joe@example.com', hash: '2f18983ad188fdc6e5dfd17fbdad59ea', status: 'unconfirmed' }
+  , { id: 3, username: 'ryuji', email: 'joe@example.com', hash: 'd0e4bc8bbddf833689e2e38fd2cc42c8', status: 'unconfirmed' }
 ];
 
 function findById(id, fn) {
