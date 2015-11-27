@@ -1,9 +1,0 @@
-extends layout
-
-block content
-  h1= title
-  p this page is #{title}
-
-  form(action="/files/add", method="POST")
-    input(type="file",name="file")
-    input.btn(type="submit", name="submit", value="submit")
