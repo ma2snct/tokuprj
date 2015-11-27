@@ -6,5 +6,9 @@ head
 body
   p Username:#{user.username}
   p Email   :#{user.email}
+  p #{status}
 
-  
+  p ファイル入力フォーム
+  form(action="/add", enctype="multipart/form-data", method="POST")
+    input(type="file", name="avatar", id="avatar")
+    input.btn(type="submit", name="submit", value="submit")
