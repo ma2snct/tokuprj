@@ -3,20 +3,13 @@ var express = require('express')
   , flash = require('connect-flash')
   , util = require('util')
   , HashStrategy = require('passport-hash').Strategy
-  ,routesu = require('./routes')
+  ,routes = require('./routes')
   ,http = require('http');;
 
-//for crypto
-/*
-var crypto = require("crypto");
-var planeText = 'secret';
-var passowrd = 'aoyama-labo';
-var cipher = crypto.createCipher('aes192', passowrd); //algorithm, password
-*/
 
 var users = [
     { id: 1, username: 'bob', password: 'secret', email: 'bob@example.com', hash: 'a123bc45d678', status: 'offline' }
-  , { id: 2, username: 'joe', password: 'birthday', email: 'joe@example.com', hash: '2f18983ad188fdc6e5dfd17fbdad59ea', status: 'unconfirmed' }
+  , { id: 2, username: 'joe', email: 'joe@example.com', hash: '2f18983ad188fdc6e5dfd17fbdad59ea', status: 'unconfirmed' }
   , { id: 3, username: 'ryuji', email: 'joe@example.com', hash: 'd0e4bc8bbddf833689e2e38fd2cc42c8', status: 'unconfirmed' }
 ];
 
@@ -40,11 +33,6 @@ function findByUserHash(hash, fn) {
 }
 
 
-// Passport session setup.
-// To support persistent login sessions, Passport needs to be able to
-// serialize users into and deserialize users out of the session.  Typically,
-// this will be as simple as storing the user ID when serializing, and finding
-// the user by ID when deserializing.
 passport.serializeUser(function(user, done) {
   done(null, user.id);
 });
@@ -56,20 +44,11 @@ passport.deserializeUser(function(id, done) {
 });
 
 
-// Use the HashStrategy within Passport.
-// Strategies in passport require a `verify` function, which accept
-// hash , and invoke a callback with a user object. In the real world,
-// this would query a database; however, in this example we are using
-// a baked-in set of users.
 passport.use(new HashStrategy(
   function(hash, done) {
     // asynchronous verification, for effect...
     process.nextTick(function () {
 
-      // Find the user by hash.  If there is no user with the given
-      // hash, or the status is not unconfirmed, set the user to `false` to
-      // indicate failure and set a flash message.  Otherwise, return the
-      // authenticated `user`.
       findByUserHash(hash, function(err, user) {
         if (err) { return done(err); }
         if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
@@ -106,18 +85,7 @@ app.configure(function() {
   //app.use(express.static(path.join(__dirname + 'public')));
 });
 
-//setting about routing
-var routes = require('./routes/index');
-var account = require('./routes/account');
-app.use('/', routes);
-app.use('/', account);
 
-
-/*
-app.get('/', function(req, res){
-  res.render('index', { title:'ejs->jade', user: req.user });
-});
-*/
 app.get('/', routes.index);
 
 
@@ -126,16 +94,6 @@ app.get('/account', ensureAuthenticated, function(req, res){
 });
 
 
-/* coz don't prepare jade template
-app.get('/login', function(req, res){
-  res.render('login', { user: req.user, message: req.flash('error') });
-});
-*/
-
-// Use passport.authenticate() as route middleware to authenticate the
-// request.  If authentication fails, the user will be redirected back to the
-// login page.  Otherwise, the primary route function function will be called,
-// which, in this example, will redirect the user to the home page.
 app.get('/confirm/:hash', passport.authenticate('hash', {
   failureRedirect: 'login', failureFlash: true
 }), function(req, res) {
@@ -175,11 +133,6 @@ app.listen(3000, function(){
 });
 
 
-// Simple route middleware to ensure user is authenticated.
-// Use this route middleware on any resource that needs to be protected.  If
-// the request is authenticated (typically via a persistent login session),
-// the request will proceed.  Otherwise, the user will be redirected to the
-// login page.
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   //res.redirect('/login');
