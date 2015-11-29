@@ -6,7 +6,14 @@ var express = require('express')
   , util = require('util')
   , HashStrategy = require('passport-hash').Strategy
   ,routes = require('./routes')
-  ,http = require('http');
+  ,http = require('http')
+
+  ,csv = require('csv')
+  ,fs = require('fs')
+  ,nano = require('nano')('http://localhost:5984')
+  ,db = require('nano')('http://localhost:5984/sotsu')
+  ,sotsu = nano.use('sotsu')
+  ,assert = require('assert');
 
 //user
 var users = [
@@ -140,6 +147,18 @@ app.post('/add', upload.single('avatar'), function (req, res, next){
   console.log(req.file)
   res.render('account', {user:req.user,status:'File added'});
   res.status(204).end();
+});
+
+//to insert sample file to CouchDB
+//to insert text to CouchDB
+app.get('/insert', function(req, res, next) {
+	sotsu.insert({_id:'Nov-29', data:'hoge'}, function(err, body, header){
+		if(!err){
+			console.log('text update done');
+		}else{
+  		console.log('err:' + err);
+		}
+	});
 });
 
 
