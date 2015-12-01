@@ -76,7 +76,8 @@ var storage = multer.diskStorage({
         cb(null, 'uploads/')
     },
     filename: function (req, file, cb) {
-        cb(null, file.originalname + '-' + Date.now())
+        //cb(null, file.originalname + '-' + Date.now())
+        cb(null, file.originalname)
   }
 })
 var upload = multer({ storage: storage })
@@ -150,17 +151,52 @@ app.post('/add', upload.single('avatar'), function (req, res, next){
 });
 
 //to insert sample file to CouchDB
+app.get('/insert-file', ensureAuthenticated, function(req, res, next) {
+
+  fs.readFile('./uploads/sample.csv', function(err, data){
+  	if(!err){
+  		sotsu.multipart.insert({foo: 'bar' }, [{name: 'sample.csv', data: data, content_type:'text/csv'}], req.user.username, function(err, body){
+  			if(!err)
+  				res.send('file inserted');
+  		});
+  	}
+  })
+
+/*
+  fs.readFile('./uploads/20150422_083412.jpg', function(err, data){
+  	if(!err){
+  		sotsu.multipart.insert({foo: 'bar' }, [{name: 'pict.jpg', data: data, content_type:'image/jpg'}], req.user.username, function(err, body){
+  			if(!err)
+  				res.send('file inserted');
+  		});
+  	}
+  })
+  */
+});
+
 //to insert text to CouchDB
-app.get('/insert', function(req, res, next) {
-	sotsu.insert({_id:'Nov-29', data:'hoge'}, function(err, body, header){
+app.get('/insert', ensureAuthenticated, function(req, res, next) {
+	sotsu.insert({_id:req.user.username, data:'hoge1'}, function(err, body, header){
 		if(!err){
-			console.log('text update done');
-		}else{
+      res.send(body._id);
+      //res.redirect('/account');
+    }else{
   		console.log('err:' + err);
 		}
 	});
 });
 
+app.get('/get', ensureAuthenticated, function(req, res, next) {
+	sotsu.get('gameday', function(err, body, header){
+		if(!err){
+      //console.log(body.value);
+      res.send(body.value);
+      //res.redirect('/account');
+		}else{
+  		console.log('err:' + err);
+		}
+	});
+});
 
 app.listen(3000, function(){
   console.log("Express server listening on http://localhost:3000");
