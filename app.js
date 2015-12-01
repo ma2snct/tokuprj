@@ -161,17 +161,32 @@ app.get('/insert-file', ensureAuthenticated, function(req, res, next) {
   		});
   	}
   })
+});
 
-/*
-  fs.readFile('./uploads/20150422_083412.jpg', function(err, data){
-  	if(!err){
-  		sotsu.multipart.insert({foo: 'bar' }, [{name: 'pict.jpg', data: data, content_type:'image/jpg'}], req.user.username, function(err, body){
-  			if(!err)
-  				res.send('file inserted');
-  		});
-  	}
-  })
-  */
+app.get('/insert-file2', ensureAuthenticated, function(req, res, next) {
+  var doc;
+
+  sotsu.get(req.user.username, function(err, body, header){
+    if(!err){
+      doc=body;
+      console.log(doc);
+
+      fs.readFile('./uploads/sample.csv', function(err, data){
+      	if(!err){
+      		sotsu.attachment.insert(req.user.username, 'sample.csv', data, 'text/csv',
+          {rev:doc._rev}, function(err, body){
+      			if(!err)
+      				res.send('attachment inserted ');
+      		});
+      	}
+      });
+
+
+    }else{
+      console.log('err at get: ' + err);
+    }
+  });
+
 });
 
 //to insert text to CouchDB
@@ -186,6 +201,7 @@ app.get('/insert', ensureAuthenticated, function(req, res, next) {
 	});
 });
 
+//to get document from CouchDB
 app.get('/get', ensureAuthenticated, function(req, res, next) {
 	sotsu.get('gameday', function(err, body, header){
 		if(!err){
