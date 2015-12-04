@@ -15,6 +15,8 @@ var express = require('express')
   ,sotsu = nano.use('sotsu')
   ,assert = require('assert');
 
+
+
 //user
 var users = [
     { id: 1, username: 'bob', password: 'secret', email: 'bob@example.com', hash: 'a123bc45d678', status: 'offline' }
@@ -189,7 +191,38 @@ app.get('/insert-file2', ensureAuthenticated, function(req, res, next) {
 
 });
 
-//to insert text to CouchDB
+//to insert csv file to CouchDB with parse
+app.get('/parse', ensureAuthenticated, function(req, res, next) {
+  //for parse
+  var csv = require('ya-csv');
+  var reader = csv.createCsvFileReader('./public/static/data.csv', {
+    'separator': ',',
+    'quote': '"',
+    'escape': '"',
+    'comment': '',
+  });
+  var in_data;
+  reader.addListener('data', function (data) {
+    in_data = data;
+  });
+
+  var doc;
+  sotsu.get(req.user.username, function(err, body, header){
+    if(!err){
+      doc=body;
+  	  sotsu.insert({_id:req.user.username, _rev:doc._rev, data:'hoge2'}, function(err, body, header){
+        if(!err){
+          res.send(body._id);
+        }else{
+    		  console.log('err:' + err);
+  		  }
+      });
+    }
+  });
+  res.send('try to parse');
+});
+
+//to insert text to CouchDB at the first time
 app.get('/insert', ensureAuthenticated, function(req, res, next) {
 	sotsu.insert({_id:req.user.username, data:'hoge1'}, function(err, body, header){
 		if(!err){
@@ -198,6 +231,25 @@ app.get('/insert', ensureAuthenticated, function(req, res, next) {
     }else{
   		console.log('err:' + err);
 		}
+	});
+});
+
+//to update docment
+app.get('/insert2', ensureAuthenticated, function(req, res, next) {
+  var doc;
+
+  sotsu.get(req.user.username, function(err, body, header){
+    if(!err){
+      doc=body;
+      //console.log(doc);
+	     sotsu.insert({_id:req.user.username, _rev:doc._rev, data:'hoge2'}, function(err, body, header){
+         if(!err){
+           res.send(body._id);
+        }else{
+  		    console.log('err:' + err);
+		    }
+      });
+    }
 	});
 });
 
