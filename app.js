@@ -195,24 +195,40 @@ app.get('/insert-file2', ensureAuthenticated, function(req, res, next) {
 app.get('/parse', ensureAuthenticated, function(req, res, next) {
   //for parse
   var csv = require('ya-csv');
-  var reader = csv.createCsvFileReader('./public/static/data.csv', {
+  //var reader = csv.createCsvFileReader('./public/static/test.csv', {
+  var reader = csv.createCsvFileReader('./public/static/test.csv', {
     'separator': ',',
     'quote': '"',
     'escape': '"',
     'comment': '',
   });
-  var in_data;
+  var in_data="{";
   reader.addListener('data', function (data) {
-    in_data = data;
+    in_data += '"' + data[0] +'":';
+    //in_data += data[1] + "\n";
+    in_data += '"' + data[1] + '",\n';
   });
+
+  //in_data = in_data.substr(0, (in_data.length()-1)
+
+
+  //convert JSON
+  //JSON.stringify(in_data);
+
 
   var doc;
   sotsu.get(req.user.username, function(err, body, header){
     if(!err){
       doc=body;
-  	  sotsu.insert({_id:req.user.username, _rev:doc._rev, data:'hoge2'}, function(err, body, header){
+      //console.log(in_data.length())
+      //console.log(typeof in_data)
+      var in_data2 = in_data.substr(0, (in_data.length-1));
+      in_data2 += "}";
+      //JSON.stringify(in_data);
+
+  	  sotsu.insert({_id:req.user.username, _rev:doc._rev, data:in_data2}, function(err, body, header){
         if(!err){
-          res.send(body._id);
+          //res.send(body._id);
         }else{
     		  console.log('err:' + err);
   		  }
