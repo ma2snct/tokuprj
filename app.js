@@ -191,6 +191,12 @@ app.get('/insert-file2', ensureAuthenticated, function(req, res, next) {
 
 });
 
+var toDoubleDigits = function(num){
+  num += "";
+  if(num.length === 1) num = "0" + num;
+  return num;
+}
+
 //to insert csv file to CouchDB with parse
 app.get('/parse', ensureAuthenticated, function(req, res, next) {
   //for parse
@@ -213,11 +219,7 @@ app.get('/parse', ensureAuthenticated, function(req, res, next) {
       doc=body;
 
       // making date
-      var toDoubleDigits = function(num){
-        num += "";
-        if(num.length === 1) num = "0" + num;
-        return num;
-      }
+
 
       var dt = new Date();
       var m = toDoubleDigits(dt.getMonth()+1);
@@ -270,14 +272,33 @@ app.get('/insert2', ensureAuthenticated, function(req, res, next) {
 app.get('/get', function(req, res, next) {
 	sotsu.get('ryuji', function(err, body, header){
 		if(!err){
-      //try to get JSON format data
-      //var j = {"hoge":"huga", "x":5}
       var j = body.data.日時;
       res.send(j);
 		}else{
   		console.log('err:' + err);
 		}
 	});
+});
+
+//to get all of ryuji"s data.血糖
+app.get('/get-ryuji', function(req, res, next) {
+  var out = [];
+  for(var i=10; i<27; i++){
+    //var d = toDoubleDigits(i);
+  	sotsu.get('ryuji'+'12'+i, function(err, body, header){
+  		if(!err){
+        out.push(body.data.血糖);
+        console.log(out);
+  		}else{
+    		console.log('err:' + err);
+  		}
+  	});
+
+    if(i>25){
+      res.send('ok');
+      console.log(out);
+    }
+  }
 });
 
 app.listen(3000, function(){
