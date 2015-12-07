@@ -203,24 +203,27 @@ app.get('/parse', ensureAuthenticated, function(req, res, next) {
   });
   var in_data={};
   reader.addListener('data', function (data) {
-    /*
-    in_data += '"' + data[0] +'":';
-    in_data += '"' + data[1] + '",\n';
-    */
     in_data[data[0]]=data[1];
   });
 
   var doc;
+
   sotsu.get(req.user.username, function(err, body, header){
     if(!err){
       doc=body;
-      //console.log(in_data.length())
-      //console.log(typeof in_data)
-      //var in_data2 = in_data.substr(0, (in_data.length-2));
-      //in_data2 += };
-      //JSON.stringify(in_data);
 
-  	  sotsu.insert({_id:req.user.username, _rev:doc._rev, data:in_data}, function(err, body, header){
+      // making date
+      var toDoubleDigits = function(num){
+        num += "";
+        if(num.length === 1) num = "0" + num;
+        return num;
+      }
+
+      var dt = new Date();
+      var m = toDoubleDigits(dt.getMonth()+1);
+      var d = toDoubleDigits(dt.getDate());
+
+  	  sotsu.insert({_id:req.user.username+m+d, data:in_data}, function(err, body, header){
         if(!err){
           //res.send(body._id);
         }else{
