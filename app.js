@@ -7,14 +7,16 @@ var express = require('express')
   , HashStrategy = require('passport-hash').Strategy
   ,routes = require('./routes')
   ,http = require('http')
-
   ,csv = require('csv')
   ,fs = require('fs')
   ,nano = require('nano')('http://localhost:5984')
   ,db = require('nano')('http://localhost:5984/sotsu')
   ,sotsu = nano.use('sotsu')
   ,assert = require('assert')
-  ,con = require('./routes/confirm.js');
+
+//routing
+  ,con = require('./routes/confirm.js')
+  ,dbaccess = require('./routes/dbaccess.js');
 
 
 
@@ -87,6 +89,7 @@ var upload = multer({ storage: storage })
 
 //var app = express();
 var app = module.exports = express();
+//var sotsu = module.exports = nano.use('sotsu')
 
 app.configure(function() {
   app.set('views', __dirname + '/views');
@@ -119,30 +122,7 @@ app.get('/confirm/:hash', passport.authenticate('hash', {
 
 
 app.post('/confirm', con.confirm);
-/*
-app.post('/confirm', function(req, res){
-  //before making input form
-  var crypto = require("crypto");
-  var passowrd = 'aoyama-labo';
 
-  planeText = req.body.pw;
-
-  var cipher = crypto.createCipher('aes192', passowrd); //algorithm, password
-  cipher.update(planeText, 'utf8', 'hex'); //data, [input_encoding], [output_encoding]
-  var cipheredText = cipher.final('hex');
-
-  console.log(cipheredText);
-  //console.log(req);
-
-
-  res.redirect('/confirm/'+cipheredText);
-});
-
-app.get('/logout', ensureAuthenticated, function(req, res){
-  req.logout();
-  res.redirect('/');
-});
-*/
 
 app.get('/file', function(req, res, next) {
   res.render('files', {title:'File_io'});
@@ -157,89 +137,12 @@ app.post('/add', upload.single('avatar'), function (req, res, next){
 });
 
 //to insert sample file to CouchDB
-app.get('/insert-file', ensureAuthenticated, function(req, res, next) {
-
-  fs.readFile('./uploads/sample.csv', function(err, data){
-  	if(!err){
-  		sotsu.multipart.insert({foo: 'bar' }, [{name: 'sample.csv', data: data, content_type:'text/csv'}], req.user.username, function(err, body){
-  			if(!err)
-  				res.send('file inserted');
-  		});
-  	}
-  })
-});
-
-app.get('/insert-file2', ensureAuthenticated, function(req, res, next) {
-  var doc;
-
-  sotsu.get(req.user.username, function(err, body, header){
-    if(!err){
-      doc=body;
-      console.log(doc);
-
-      fs.readFile('./uploads/sample.csv', function(err, data){
-      	if(!err){
-      		sotsu.attachment.insert(req.user.username, 'sample.csv', data, 'text/csv',
-          {rev:doc._rev}, function(err, body){
-      			if(!err)
-      				res.send('attachment inserted ');
-      		});
-      	}
-      });
-
-
-    }else{
-      console.log('err at get: ' + err);
-    }
-  });
-
-});
-
-var toDoubleDigits = function(num){
-  num += "";
-  if(num.length === 1) num = "0" + num;
-  return num;
-}
+app.get('/insert-file', ensureAuthenticated, dbaccess.insertfile);
+//app.get('/insert-file', ensureAuthenticated, routes.insertfile);
 
 //to insert csv file to CouchDB with parse
-app.get('/parse', ensureAuthenticated, function(req, res, next) {
-  //for parse
-  var csv = require('ya-csv');
-  var reader = csv.createCsvFileReader('./public/static/test.csv', {
-    'separator': ',',
-    'quote': '"',
-    'escape': '"',
-    'comment': '',
-  });
-  var in_data={};
-  reader.addListener('data', function (data) {
-    in_data[data[0]]=data[1];
-  });
+app.get('/parse', ensureAuthenticated, dbaccess.parse);
 
-  var doc;
-
-  sotsu.get(req.user.username, function(err, body, header){
-    if(!err){
-      doc=body;
-
-      // making date
-
-
-      var dt = new Date();
-      var m = toDoubleDigits(dt.getMonth()+1);
-      var d = toDoubleDigits(dt.getDate());
-
-  	  sotsu.insert({_id:req.user.username+m+d, data:in_data}, function(err, body, header){
-        if(!err){
-          //res.send(body._id);
-        }else{
-    		  console.log('err:' + err);
-  		  }
-      });
-    }
-  });
-  res.send('try to parse');
-});
 
 //to insert text to CouchDB at the first time
 app.get('/insert', ensureAuthenticated, function(req, res, next) {
