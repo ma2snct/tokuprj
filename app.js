@@ -195,26 +195,20 @@ app.get('/insert-file2', ensureAuthenticated, function(req, res, next) {
 app.get('/parse', ensureAuthenticated, function(req, res, next) {
   //for parse
   var csv = require('ya-csv');
-  //var reader = csv.createCsvFileReader('./public/static/test.csv', {
   var reader = csv.createCsvFileReader('./public/static/test.csv', {
     'separator': ',',
     'quote': '"',
     'escape': '"',
     'comment': '',
   });
-  var in_data="{";
+  var in_data={};
   reader.addListener('data', function (data) {
+    /*
     in_data += '"' + data[0] +'":';
-    //in_data += data[1] + "\n";
     in_data += '"' + data[1] + '",\n';
+    */
+    in_data[data[0]]=data[1];
   });
-
-  //in_data = in_data.substr(0, (in_data.length()-1)
-
-
-  //convert JSON
-  //JSON.stringify(in_data);
-
 
   var doc;
   sotsu.get(req.user.username, function(err, body, header){
@@ -222,11 +216,11 @@ app.get('/parse', ensureAuthenticated, function(req, res, next) {
       doc=body;
       //console.log(in_data.length())
       //console.log(typeof in_data)
-      var in_data2 = in_data.substr(0, (in_data.length-1));
-      in_data2 += "}";
+      //var in_data2 = in_data.substr(0, (in_data.length-2));
+      //in_data2 += };
       //JSON.stringify(in_data);
 
-  	  sotsu.insert({_id:req.user.username, _rev:doc._rev, data:in_data2}, function(err, body, header){
+  	  sotsu.insert({_id:req.user.username, _rev:doc._rev, data:in_data}, function(err, body, header){
         if(!err){
           //res.send(body._id);
         }else{
@@ -270,12 +264,13 @@ app.get('/insert2', ensureAuthenticated, function(req, res, next) {
 });
 
 //to get document from CouchDB
-app.get('/get', ensureAuthenticated, function(req, res, next) {
-	sotsu.get('gameday', function(err, body, header){
+app.get('/get', function(req, res, next) {
+	sotsu.get('ryuji', function(err, body, header){
 		if(!err){
-      //console.log(body.value);
-      res.send(body.value);
-      //res.redirect('/account');
+      //try to get JSON format data
+      //var j = {"hoge":"huga", "x":5}
+      var j = body.data.日時;
+      res.send(j);
 		}else{
   		console.log('err:' + err);
 		}
