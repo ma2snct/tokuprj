@@ -1,8 +1,13 @@
+var app = module.parent.exports
+
+/*
 exports.confirm = function(req, res){
   res.redirect('/');
   return;
 }
-exports.confirm.post = function(req, res){
+*/
+
+exports.confirm = function(req, res){
   //before making input form
   var crypto = require("crypto");
   var passowrd = 'aoyama-labo';

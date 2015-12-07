@@ -13,7 +13,8 @@ var express = require('express')
   ,nano = require('nano')('http://localhost:5984')
   ,db = require('nano')('http://localhost:5984/sotsu')
   ,sotsu = nano.use('sotsu')
-  ,assert = require('assert');
+  ,assert = require('assert')
+  ,con = require('./routes/confirm.js');
 
 
 
@@ -84,12 +85,12 @@ var storage = multer.diskStorage({
 })
 var upload = multer({ storage: storage })
 
-var app = express();
+//var app = express();
+var app = module.exports = express();
 
 app.configure(function() {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  //app.engine('ejs', require('ejs-locals'));
   app.use(express.favicon());
   app.use(express.logger('dev'));
   app.use(express.cookieParser('keyboard cat'));
@@ -100,7 +101,6 @@ app.configure(function() {
   app.use(passport.session());
   app.use(app.router);
   app.use(express.static(__dirname + 'public'));
-  //app.use(express.static(path.join(__dirname + 'public')));
 });
 
 //routing
@@ -117,6 +117,9 @@ app.get('/confirm/:hash', passport.authenticate('hash', {
   res.redirect('/account');
 });
 
+
+app.post('/confirm', con.confirm);
+/*
 app.post('/confirm', function(req, res){
   //before making input form
   var crypto = require("crypto");
@@ -139,6 +142,7 @@ app.get('/logout', ensureAuthenticated, function(req, res){
   req.logout();
   res.redirect('/');
 });
+*/
 
 app.get('/file', function(req, res, next) {
   res.render('files', {title:'File_io'});
