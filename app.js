@@ -143,6 +143,9 @@ app.get('/insert-file', ensureAuthenticated, dbaccess.insertfile);
 //to insert csv file to CouchDB with parse
 app.get('/parse', ensureAuthenticated, dbaccess.parse);
 
+//to insert HL7 text file to CouchDB with json
+app.get('/parsehl7', ensureAuthenticated,dbaccess.parsehl7);
+
 
 //to insert text to CouchDB at the first time
 app.get('/insert', ensureAuthenticated, function(req, res, next) {
@@ -188,25 +191,8 @@ app.get('/get', function(req, res, next) {
 });
 
 //to get all of ryuji"s data.血糖
-app.get('/get-ryuji', function(req, res, next) {
-  var out = [];
-  for(var i=10; i<27; i++){
-    //var d = toDoubleDigits(i);
-  	sotsu.get('ryuji'+'12'+i, function(err, body, header){
-  		if(!err){
-        out.push(body.data.血糖);
-        console.log(out);
-  		}else{
-    		console.log('err:' + err);
-  		}
-  	});
+app.get('/getdb', ensureAuthenticated, dbaccess.getdb);
 
-    if(i>25){
-      res.send('ok');
-      console.log(out);
-    }
-  }
-});
 
 app.listen(3000, function(){
   console.log("Express server listening on http://localhost:3000");

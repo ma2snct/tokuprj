@@ -6,20 +6,6 @@ var nano = require('nano')('http://localhost:5984')
   ,fs = require('fs');
 
 
-/*
-app.get('/insert-file', ensureAuthenticated, function(req, res, next) {
-
-  fs.readFile('./uploads/sample.csv', function(err, data){
-  	if(!err){
-  		sotsu.multipart.insert({foo: 'bar' }, [{name: 'sample.csv', data: data, content_type:'text/csv'}], req.user.username, function(err, body){
-  			if(!err)
-  				res.send('file inserted');
-  		});
-  	}
-  })
-});
-*/
-
 exports.insertfile = function(req, res, next) {
   var doc;
 
@@ -51,7 +37,7 @@ var toDoubleDigits = function(num){
   num += "";
   if(num.length === 1) num = "0" + num;
   return num;
-} 
+}
 
 //to insert csv file to CouchDB with parse
 exports.parse = function(req, res, next) {
@@ -91,4 +77,71 @@ exports.parse = function(req, res, next) {
     }
   });
   res.send('try to parse');
+};
+
+exports.parsehl7 = function(req, res, next){
+  var fs = require('fs')
+	,rs = fs.createReadStream('./public/static/rxedata.txt')
+	,readline = require('readline');
+
+  var rl = readline.createInterface(rs, {});
+
+  var tags = {"RXE":"薬剤/処置 コード化されたオーダ",
+			"NTE":"注釈・コメント",
+			"TQ1":"タイミング/数量"
+			};
+
+
+
+  var in_data = {};
+
+  //whenever input line
+  rl.on('line', function(line){
+  	//console.log(line);
+  	var tag = line.substr(0,3);
+  	//console.log(tag);
+  	in_data[tags[tag]]=line.substr(4);
+  	//console.log(in_data);
+  });
+
+  sotsu.get(req.user.username, function(err, body, header){
+    if(!err){
+      doc=body;
+
+      var dt = new Date();
+      var m = toDoubleDigits(dt.getMonth()+1);
+      var d = toDoubleDigits(dt.getDate());
+
+  	  sotsu.insert({_id:req.user.username+m+d, data:in_data}, function(err, body, header){
+        if(!err){
+          //res.send(body._id);
+        }else{
+    		  console.log('err:' + err);
+  		  }
+      });
+    }
+  });
+
+  res.send('hl7 text parse to json');
+
+};
+
+exports.getdb =  function(req, res, next) {
+  var out = [];
+  for(var i=10; i<27; i++){
+    //var d = toDoubleDigits(i);
+  	sotsu.get(req.user.username+'12'+i, function(err, body, header){
+  		if(!err){
+        out.push(body.data.血糖);
+        console.log(out);
+  		}else{
+    		console.log('err:' + err);
+  		}
+  	});
+
+    if(i>25){
+      res.send('ok');
+      console.log(out);
+    }
+  }
 };
