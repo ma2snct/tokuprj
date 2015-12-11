@@ -126,7 +126,7 @@ exports.horizontialparse = function(req, res, next) {
       var d = toDoubleDigits(dt.getDate());
 
       for(var k in list){
-    	  sotsu.insert({_id:"ryuji"/*req.user.username*/+m+d+"-"+k, medicine:list[k]}, function(err, body, header){
+    	  sotsu.insert({_id:"ryuji"/*req.user.username*/+m+(d+1)+"-"+k, data:list[k]}, function(err, body, header){
           if(!err){
             //res.send(body._id);
           }else{
@@ -189,22 +189,35 @@ exports.parsehl7 = function(req, res, next){
 
 };
 
+
+//to get all data which is sellected key
 exports.getdb =  function(req, res, next) {
   var out = [];
-  for(var i=10; i<27; i++){
-    //var d = toDoubleDigits(i);
-  	sotsu.get(req.user.username+'12'+i, function(err, body, header){
+  var regexp = /薬+/;
+  for(var i=9; i<26; i++){
+    var d = toDoubleDigits(i);
+  	sotsu.get("ryuji"/*req.user.username*/+'12'+d, function(err, body, header){
   		if(!err){
-        out.push(body.data.血糖);
-        console.log(out);
+        var data = body.data;
+        for(key in data){
+          if(key.match(regexp)){
+            //console.log(key);
+            out.push(data[key]);
+            console.log(data[key]);
+          }
+          //console.log(key);
+          i++;
+        }
+        //console.log(out);
   		}else{
     		console.log('err:' + err);
   		}
   	});
 
-    if(i>25){
-      res.send('ok');
+    if(i>24){
       console.log(out);
+      res.send('ok');
+
     }
   }
 };
