@@ -143,6 +143,8 @@ app.get('/insert-file', ensureAuthenticated, dbaccess.insertfile);
 //to insert csv file to CouchDB with parse
 app.get('/parse', ensureAuthenticated, dbaccess.parse);
 
+app.get('/horizontialparse', /*ensureAuthenticated,*/ dbaccess.horizontialparse)
+
 //to insert HL7 text file to CouchDB with json
 app.get('/parsehl7', ensureAuthenticated,dbaccess.parsehl7);
 
