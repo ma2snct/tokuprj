@@ -143,7 +143,7 @@ exports.horizontialparse = function(req, res, next) {
 //to insert hl7 text file to CouchDB
 exports.parsehl7 = function(req, res, next){
   var fs = require('fs')
-	,rs = fs.createReadStream('./public/static/rxedata.txt')
+	,rs = fs.createReadStream('./public/static/obxonly.txt')
 	,readline = require('readline');
 
   var rl = readline.createInterface(rs, {});
@@ -154,18 +154,67 @@ exports.parsehl7 = function(req, res, next){
 			"TQ1":"タイミング/数量"
 			};
 
+  //todo RXEタグ以外にも対応させる
+  var childtags = {
+    "RXE-0":"セグメントID",
+    "RXE-1":"数量/タイミング",
+    "RXE-2":"与薬コード",
+    "RXE-3":"与薬量－最小",
+    "RXE-4":"与薬量－最大",
+    "RXE-5":"与薬単位",
+    "RXE-6":"与薬剤形",
+    "RXE-7":"依頼者の投薬指示"
+  };
+
+  var OBXtags = {
+    "OBX-0" : "セグメント ID",
+    "OBX-1" : "セット ID - OBX",
+    "OBX-2" : "値型",
+    "OBX-3" : "検査項目",
+    "OBX-4" : "検査副 ID",
+    "OBX-5" : "検査値",
+    "OBX-6" : "単位"
+  }
+
 
 
   var in_data = {};
 
-  //whenever input line
+  //whenever input line for RXE
+  /*
   rl.on('line', function(line){
-  	//console.log(line);
   	var tag = line.substr(0,3);
-  	//console.log(tag);
-  	in_data[tags[tag]]=line.substr(4);
-  	//console.log(in_data);
+    var i=0;
+    for(t in childtags){
+
+      var n=line.indexOf("|")
+
+      in_data[childtags[t]]=line.substr(0,n);
+      line = line.substr(n+1);
+      i++;
+
+      console.log(in_data);
+    }
   });
+  */
+
+  //whenever input line for OBX
+  rl.on('line', function(line){
+    var tag = line.substr(0,3);
+    var i=0;
+    for(t in OBXtags){
+
+      var n=line.indexOf("|")
+
+      in_data[OBXtags[t]]=line.substr(0,n);
+      line = line.substr(n+1);
+      i++;
+
+      console.log(in_data);
+    }
+  });
+
+
 
   sotsu.get(req.user.username, function(err, body, header){
     if(!err){
@@ -185,7 +234,9 @@ exports.parsehl7 = function(req, res, next){
     }
   });
 
+
   res.send('hl7 text parse to json');
+  //res.send(in_data);
 
 };
 
@@ -193,6 +244,8 @@ exports.parsehl7 = function(req, res, next){
 //to get all data which is sellected key
 exports.getdb =  function(req, res, next) {
   var out = [];
+  //var keyword = "薬";
+  //var regexp = /keyword+/;
   var regexp = /薬+/;
   for(var i=9; i<26; i++){
     var d = toDoubleDigits(i);
@@ -203,7 +256,8 @@ exports.getdb =  function(req, res, next) {
           if(key.match(regexp)){
             //console.log(key);
             out.push(data[key]);
-            console.log(data[key]);
+            console.log(body.data);
+            //console.log(body.data._id + ":" + data[key]);
           }
           //console.log(key);
           i++;

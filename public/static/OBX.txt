@@ -1,0 +1,6 @@
+OBX-0 セグメント ID
+OBX-1 セット ID - OBX
+OBX-2 値型
+OBX-3 検査項目
+OBX-4 検査副 ID
+OBX-6 単位
