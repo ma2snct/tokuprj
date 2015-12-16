@@ -137,8 +137,8 @@ app.post('/add', upload.single('avatar'), function (req, res, next){
 });
 
 //to insert sample file to CouchDB
-app.get('/insert-file', ensureAuthenticated, dbaccess.insertfile);
-//app.get('/insert-file', ensureAuthenticated, routes.insertfile);
+//app.get('/insert-file', ensureAuthenticated, dbaccess.insertfile);
+
 
 //to insert csv file to CouchDB with parse
 app.get('/parse', ensureAuthenticated, dbaccess.parse);
