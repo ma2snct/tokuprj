@@ -13,9 +13,9 @@ var toDoubleDigits = function(num){
   return num;
 }
 
-//for parse
+//読み込むファイルがCSVのときにつかう
 var csv = require('ya-csv');
-var reader = csv.createCsvFileReader('./public/static/test.csv', {
+var reader = csv.createCsvFileReader('./public/static/HEM_201411.csv', {
   'separator': ',',
   'quote': '"',
   'escape': '"',
@@ -25,6 +25,8 @@ var reader = csv.createCsvFileReader('./public/static/test.csv', {
 //to insert vartical csv file to CouchDB with parse
 //検査データのときに使う
 exports.parse = function(req, res, next) {
+
+  //console.log(reader);
 
   var in_data={};
   reader.addListener('data', function (data) {
@@ -56,8 +58,20 @@ exports.parse = function(req, res, next) {
 };
 
 //to insert horizontial csv file to CouchDB with parse
-//投薬データのときに使う
+//投薬データ,血圧データのときに使う
+//行の数だけドキュメントが作られる
 exports.horizontialparse = function(req, res, next) {
+
+  //読み込むファイルがCSVのときにつかう
+  //todo これを関数の外で使えるようにする
+  var csv = require('ya-csv');
+  var reader = csv.createCsvFileReader('./public/static/HEM_201411.csv', {
+    'separator': ',',
+    'quote': '"',
+    'escape': '"',
+    'comment': '',
+  });
+
 
   var in_data={};
   var list = [];
@@ -89,8 +103,10 @@ exports.horizontialparse = function(req, res, next) {
       var m = toDoubleDigits(dt.getMonth()+1);
       var d = toDoubleDigits(dt.getDate());
 
+      console.log("---" + list);
+
       for(var k in list){
-    	  sotsu.insert({_id:"ryuji"/*req.user.username*/+m+(d+1)+"-"+k, data:list[k]}, function(err, body, header){
+    	  sotsu.insert({_id:"ryuji-01"/*req.user.username*/+d+"-"+k, data:list[k]}, function(err, body, header){
           if(!err){
             //res.send(body._id);
           }else{
@@ -200,7 +216,7 @@ exports.parsehl7 = function(req, res, next){
 
 
   res.send('hl7 text parse to json');
-  //res.send(in_data);
+
 
 };
 
@@ -227,8 +243,10 @@ exports.getdb =  function(req, res, next) {
           //検索ワードに一致したら
           if(key.match(regexp)){
             out.push(data[key]);
+            console.log(out);
             //ドキュメント名とkey-valueを表示する
-            console.log(body._id + ":" + key + "->" + data[key]);
+            //console.log(body._id + ":" + key + "->" + data[key]);
+            //out.push(body._id + ":" + key + "->" + data[key]);
           }
           i++;
         }
@@ -239,7 +257,9 @@ exports.getdb =  function(req, res, next) {
 
     if(i>24){
       console.log("---out---" + out);
-      res.send('ok');
+      //res.send('ok');
+      var list = ['zero', 'one', 'two'];
+      res.render('getdb', {out:out});
 
     }
   }
