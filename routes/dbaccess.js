@@ -198,23 +198,24 @@ exports.getdb =  function(req, res, next) {
             out.push(data[key]);
             //console.log(out);
             //ドキュメント名とkey-valueを表示する
-            console.log(body._id + ":" + key + "->" + data[key]);
+            //console.log(body._id + ":" + key + "->" + data[key]);
+            console.log(list.length);
             list.push(body._id + ":" + key + "->" + data[key]);
+
+            //listに検索結果が5件たまったら
+            if(list.length>5){
+              res.render('getdb', {list:list});
+            }
+
           }
-          i++;
         }
   		}else{
-    		console.log('err:' + err);
+    		//console.log('err:' + err);
   		}
   	});
 
-    if(i>24){
-      console.log("---out---" + out);
-      //res.send('ok');
-      //var list = ['zero', 'one', 'two'];
-      //res.render('getdb', {list:list});
-      res.render('getdb');
 
-    }
   }
+  //res.render('getdb', {list:list}); //list渡せてるけど入ってない
+
 };
