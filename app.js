@@ -193,7 +193,7 @@ app.get('/get', function(req, res, next) {
 });
 
 //to get all of ryuji"s data.血糖
-app.get('/getdb', /*ensureAuthenticated, */dbaccess.getdb);
+app.post('/getdb', /*ensureAuthenticated, */dbaccess.getdb);
 
 
 app.listen(3000, function(){

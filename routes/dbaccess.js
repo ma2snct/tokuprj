@@ -27,7 +27,7 @@ function dbInsert(name, in_data){
       //ドキュメント名は患者の名前に日付が追加される
       //sotsu.insert({_id:name+m+d, data:in_data}, function(err, body, header){
       //デバッグ用　
-      sotsu.insert({_id:'000', data:in_data}, function(err, body, header){
+      sotsu.insert({_id:name + m + d, data:in_data}, function(err, body, header){
         if(!err){
           //res.send(body._id);
         }else{
@@ -73,15 +73,15 @@ exports.horizontialparse = function(req, res, next) {
   //読み込むファイルがCSVのときにつかう
   //todo これを関数の外で使えるようにする
   //現状関数の中にいれとかないと空のドキュメントになる
-  /*
+
   var csv = require('ya-csv');
-  var reader = csv.createCsvFileReader('./public/static/HEM_201411.csv', {
+  var reader = csv.createCsvFileReader('./public/static/medicines.csv', {
     'separator': ',',
     'quote': '"',
     'escape': '"',
     'comment': '',
   });
-  */
+
 
 
   var in_data={};
@@ -99,7 +99,7 @@ exports.horizontialparse = function(req, res, next) {
     }
     //console.log(in_data)
     list.push(in_data);
-    console.log(list)
+    //console.log(list)
     i++;
   });
 
@@ -173,15 +173,15 @@ exports.parsehl7 = function(req, res, next){
 
 
 //to get all data which is sellected key
-//todo ブラウザに結果を表示する
+
 exports.getdb =  function(req, res, next) {
   var out = [];
-  var list = ["hoge"];
-  //var keyword = "薬";
-  //var regexp = /keyword+/;
-  var regexp = /薬+/;
+  var list = [];
+  var keyword = req.body.keyword;
+  var regexp = new RegExp(keyword + "+");
+  console.log(req.body.keyword);
 
-  //todo ループの範囲を適当に
+  //todo ループの範囲を適当に 日付も指定できるようにする
   //ryujiの12月のドキュメントに対して
   for(var i=9; i<26; i++){
     var d = toDoubleDigits(i);
@@ -196,10 +196,7 @@ exports.getdb =  function(req, res, next) {
           //検索ワードに一致したら
           if(key.match(regexp)){
             out.push(data[key]);
-            //console.log(out);
-            //ドキュメント名とkey-valueを表示する
-            //console.log(body._id + ":" + key + "->" + data[key]);
-            console.log(list.length);
+            console.log(body._id + ":" + key + "->" + data[key]);
             list.push(body._id + ":" + key + "->" + data[key]);
 
             //listに検索結果が5件たまったら
