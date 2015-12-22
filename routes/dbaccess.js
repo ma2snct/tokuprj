@@ -173,8 +173,10 @@ exports.parsehl7 = function(req, res, next){
 
 
 //to get all data which is sellected key
+//todo ブラウザに結果を表示する
 exports.getdb =  function(req, res, next) {
   var out = [];
+  var list = ["hoge"];
   //var keyword = "薬";
   //var regexp = /keyword+/;
   var regexp = /薬+/;
@@ -194,10 +196,10 @@ exports.getdb =  function(req, res, next) {
           //検索ワードに一致したら
           if(key.match(regexp)){
             out.push(data[key]);
-            console.log(out);
+            //console.log(out);
             //ドキュメント名とkey-valueを表示する
-            //console.log(body._id + ":" + key + "->" + data[key]);
-            //out.push(body._id + ":" + key + "->" + data[key]);
+            console.log(body._id + ":" + key + "->" + data[key]);
+            list.push(body._id + ":" + key + "->" + data[key]);
           }
           i++;
         }
@@ -209,8 +211,9 @@ exports.getdb =  function(req, res, next) {
     if(i>24){
       console.log("---out---" + out);
       //res.send('ok');
-      var list = ['zero', 'one', 'two'];
-      res.render('getdb', {list:list});
+      //var list = ['zero', 'one', 'two'];
+      //res.render('getdb', {list:list});
+      res.render('getdb');
 
     }
   }

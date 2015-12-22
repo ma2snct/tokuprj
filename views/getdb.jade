@@ -1,19 +1,18 @@
+-
+  var list = [
+    'one',
+    'two',
+    'tree'
+  ]
+-
+  var obj = {
+    a: 'one',
+    b: 'two',
+    c: 'tree',
+  }
 
-html
-  head
+- for(var i=0,l=list.length; i<l; i+=1)
+  p= list[i]
 
-  body
-
-    p jade test page
-
-    list = ['a', 'b', 'c']
-    ul
-    for item, index in #{list}
-      if(index % 2) == 0
-        li.even = item
-      else
-        li.odd = item
-
-
-
-#{out}
+- each val, index in obj
+  p #{index}: #{val}
