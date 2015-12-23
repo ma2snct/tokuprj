@@ -201,7 +201,7 @@ exports.getdb =  function(req, res, next) {
 
             //listに検索結果が5件たまったら
             if(list.length>5){
-              res.render('getdb', {list:list});
+              res.render('getdb', {list:list,keyword:req.body.keyword});
             }
 
           }
