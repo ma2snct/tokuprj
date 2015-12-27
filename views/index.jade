@@ -1,19 +1,20 @@
-//extends layout
+extends layout
 
-head
-  style
-    include style.css
+block content
+  if user
+    p Welcome to #{user}
+  else
+    p Hello
 
-body
+  form(method="post" action="/confirm")
+    input(type="text" name="username")
+    input(type="password" name="pw")
+    input.btn(type="submit" value="submit")
 
-  block content
-    h1= title
-    if user
-      p Welcome to #{user}
-    else
-      p Hello
-
-    form(method="post" action="/confirm")
-      input(type="text" name="username")
-      input(type="password" name="pw")
-      input.btn(type="submit" value="submit")
+  div.container
+    div.row
+      div.col-xs-6.col-sm-3 .xs-6.sm-3
+      div.col-xs-6.col-sm-3 .xs-6.sm-3
+      div.col-xs-6.col-sm-3 .xs-6.sm-3
+      div.clearfix.visible-xs
+      div.col-xs-6.col-sm-3 .xs-6.sm-3

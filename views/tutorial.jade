@@ -1,0 +1,31 @@
+div
+  address
+  i
+  strong
+
+h1 Welcome to jade
+p
+  |Text can be included in a number of
+  |different ways.
+p.
+  This way is shortest if you need big
+  blocks of text spanning multiple
+  lines.
+
+h1(id="title") Welcome to jade
+button(class="btn", data-action="bea")
+  be Awesome
+
+h1#title Welcome to jade
+button.btn(data-action="bea") Awesome
+
+//- var user = {name:'John'}
+if user
+  div.welcomebox
+    p.
+      Welcome, #{user.name}
+else
+  div.loginbox
+    form(name='login', action='/login', method='post')
+      input(type='text', name='user' )
+      input(type='submit', value='login')
