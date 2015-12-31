@@ -3,19 +3,34 @@ html
   head
 
     style
-      //include style.css
       include ./../stylesheets/bootstrap.min.css
 
     block title
+      div.container(style='padding:20px')
+      div.tabbable.tabs-below
+        div.tab-content
+            div.tab-pane.active
+        ul.nav.nav-tabs
+            li
+                a(href='/', data-toggle='tab') Home
+            li
+                a(href='/account', data-toggle='tab') Account
+            li
+                a(href='../blog', data-toggle='tab') Info
+            li
+                a(href='../faq', data-toggle='tab') Input
+            
+
+
       h1= 'Healthcare Information Sharing App'
 
 
   body
     block content
 
+
   footer
-    br
-    div#facebook.
+    div#sns-facebook.
       <div id="fb-root"></div>
       <script>
         (function(d, s, id) {

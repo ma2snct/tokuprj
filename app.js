@@ -195,42 +195,6 @@ app.get('/get', function(req, res, next) {
 //to get all of ryuji"s data.血糖
 app.post('/getdb', ensureAuthenticated, dbaccess.getdb);
 
-app.get('/jade', function(req, res, next){
-  res.render('tutorial', {hoge:'hoge'});
-});
-
-app.get('/jade2', function(req, res, next){
-  res.render('tutorial2', {hoge:'hoge'});
-});
-
-app.get('/jade3', function(req, res, next){
-  res.render('tutorial3', {hoge:'hoge'});
-});
-
-var package = {
-  title: '最高にクールなホームページ',
-  description: '最高にクールなホームページです。見ないと損です。',
-  keywords: [
-    '最高',
-    'クール',
-    '世界一',
-    '天才'
-  ],
-  robots: [
-    'INDEX',
-    'FOLLOW',
-    'NOODP',
-    'NOYDIR',
-    'NOARCHIVE'
-  ]
-};
-
-
-app.get('/aboutjade', function(req, res, next){
-  res.render('about', {package:'package'});
-});
-
-
 app.listen(3000, function(){
   console.log("Express server listening on http://localhost:3000");
 });

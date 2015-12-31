@@ -1,20 +1,18 @@
 extends layout
 
+
 block content
-  if user
-    p Welcome to #{user}
-  else
-    p Hello
-
-  form(method="post" action="/confirm")
-    input(type="text" name="username")
-    input(type="password" name="pw")
-    input.btn(type="submit" value="submit")
-
   div.container
-    div.row
-      div.col-xs-6.col-sm-3 .xs-6.sm-3
-      div.col-xs-6.col-sm-3 .xs-6.sm-3
-      div.col-xs-6.col-sm-3 .xs-6.sm-3
-      div.clearfix.visible-xs
-      div.col-xs-6.col-sm-3 .xs-6.sm-3
+    if user
+      p Welcome to #{user}
+    else
+      h2 login form
+
+    form(method="post" action="/confirm")
+      div.form-group
+        label(for='inputId') ID
+        input.form-control#inputId(type="text", name="username")
+      div.form-group
+        label(for='inputPw') PW
+        input.form-control#inputPw(type="password", name="pw")
+        input.btn.btn-primary(type="submit", value="submit")
