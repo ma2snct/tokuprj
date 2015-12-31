@@ -1,7 +1,10 @@
 extends layout
 
 block content
-  p 検索ワード-> #{keyword}
+  div.container
+    p 検索ワード-> #{keyword}
 
-  - for(var i=0,l=list.length; i<l; i+=1)
-    p= list[i]
+    table.table.table-bordered.table-striped(style="width:100%")
+      each doc in list
+        tr
+          td #{doc}
