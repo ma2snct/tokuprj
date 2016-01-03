@@ -41,16 +41,19 @@ function dbInsert(name, in_data){
 
 //読み込むファイルがCSVのときにつかう
 var csv = require('ya-csv');
-var reader = csv.createCsvFileReader('./public/static/HEM_201411.csv', {
-  'separator': ',',
-  'quote': '"',
-  'escape': '"',
-  'comment': '',
-});
+
 
 //to insert vartical csv file to CouchDB with parse
 //検査データのときに使う
 exports.parse = function(req, res, next) {
+  console.log(req.files.avatar);
+
+  var reader = csv.createCsvFileReader(req.files.avatar.path, {
+    'separator': ',',
+    'quote': '"',
+    'escape': '"',
+    'comment': '',
+  });
 
   var in_data={};
   reader.addListener('data', function (data) {
@@ -62,7 +65,7 @@ exports.parse = function(req, res, next) {
 
   dbInsert(req.user.username, in_data);
 
-  res.send('try to parse');
+  res.redirect('account');
 };
 
 //to insert horizontial csv file to CouchDB with parse
@@ -75,7 +78,7 @@ exports.horizontialparse = function(req, res, next) {
   //現状関数の中にいれとかないと空のドキュメントになる
 
   var csv = require('ya-csv');
-  var reader = csv.createCsvFileReader('./public/static/medicines.csv', {
+  var reader = csv.createCsvFileReader(req.files.avatar.path, {
     'separator': ',',
     'quote': '"',
     'escape': '"',
@@ -107,7 +110,7 @@ exports.horizontialparse = function(req, res, next) {
 
   dbInsert(req.user.username, in_data);
 
-  res.send('try to horizontial csv file');
+  res.redirect('account');
 };
 
 var tags = {
@@ -137,7 +140,7 @@ var tags = {
 //to insert hl7 text file to CouchDB
 exports.parsehl7 = function(req, res, next){
   var fs = require('fs')
-	,rs = fs.createReadStream('./public/static/obxonly.txt')
+	,rs = fs.createReadStream(req.files.avatar.path)
 	,readline = require('readline');
 
   var rl = readline.createInterface(rs, {});
@@ -166,9 +169,7 @@ exports.parsehl7 = function(req, res, next){
 
   dbInsert(req.user.username, in_data);
 
-  res.send('hl7 text parse to json');
-
-
+  res.redirect('account');
 };
 
 

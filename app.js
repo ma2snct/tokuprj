@@ -141,12 +141,12 @@ app.post('/add', upload.single('avatar'), function (req, res, next){
 
 
 //to insert csv file to CouchDB with parse
-app.get('/parse', ensureAuthenticated, dbaccess.parse);
+app.post('/parse', ensureAuthenticated, dbaccess.parse);
 
-app.get('/horizontialparse', /*ensureAuthenticated,*/ dbaccess.horizontialparse)
+app.post('/horizontialparse', /*ensureAuthenticated,*/ dbaccess.horizontialparse)
 
 //to insert HL7 text file to CouchDB with json
-app.get('/parsehl7', ensureAuthenticated,dbaccess.parsehl7);
+app.post('/parsehl7', ensureAuthenticated,dbaccess.parsehl7);
 
 
 //to insert text to CouchDB at the first time
