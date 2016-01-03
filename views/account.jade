@@ -7,18 +7,8 @@ block content
     p Email   :#{user.email}
     p #{status}
 
-    br
-
-    a(href="/parse", target="_blank") parse page
 
     br
-    br
-
-    p ファイル入力フォーム
-    form(action="/add", enctype="multipart/form-data", method="POST")
-      input(type="file", name="avatar", id="avatar")
-      input.btn.btn-primary(type="submit", name="submit", value="submit")
-
     br
 
     p 検索ワード入力フォーム

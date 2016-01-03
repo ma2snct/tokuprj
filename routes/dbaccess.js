@@ -175,17 +175,29 @@ exports.parsehl7 = function(req, res, next){
 //to get all data which is sellected key
 
 exports.getdb =  function(req, res, next) {
+  //検索結果を返すための配列
   var out = [];
   var list = [];
+
+  //検索キーワード
   var keyword = req.body.keyword;
+  var sub_keyword = "投";
+
+  //検索キーワードを正規表現のオブジェクトに
   var regexp = new RegExp(keyword + "+");
-  console.log(req.body.keyword);
+  var sub_regexp = new RegExp(sub_keyword + "+");
+
+
+  console.log('main:' + regexp);
+  console.log('sub :' + sub_regexp);
 
   //todo ループの範囲を適当に 日付も指定できるようにする
-  //ryujiの12月のドキュメントに対して
+  //ログインユーザの12月のドキュメントに対して
+  date = new Date();
+  var m = toDoubleDigits(date.getMonth()+12);
   for(var i=9; i<26; i++){
     var d = toDoubleDigits(i);
-  	sotsu.get("ryuji"/*req.user.username*/+'12'+d, function(err, body, header){
+  	sotsu.get(req.user.username + m + d, function(err, body, header){
   		if(!err){
         //dataタグに格納されているデータ群だけを変数に入れる
         var data = body.data;
@@ -194,7 +206,7 @@ exports.getdb =  function(req, res, next) {
         //組の数だけループ
         for(key in data){
           //検索ワードに一致したら
-          if(key.match(regexp)){
+          if(key.match(regexp) || key.match(sub_regexp)){
             out.push(data[key]);
             console.log(body._id + ":" + key + "->" + data[key]);
             list.push(body._id + ":" + key + "->" + data[key]);
@@ -206,9 +218,8 @@ exports.getdb =  function(req, res, next) {
 
           }
         }
-  		}else{
-    		//console.log('err:' + err);
-  		}
+
+      }
   	});
 
 
